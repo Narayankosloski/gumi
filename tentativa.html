@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Livro de Partituras</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background: radial-gradient(circle,#222,#000);
+font-family:Georgia,serif;
+overflow:hidden;
+}
+
+/* LIVRO */
+.book{
+position:relative;
+width:900px;
+height:600px;
+perspective:3000px;
+}
+
+/* PÁGINAS */
+.page{
+position:absolute;
+width:450px;
+height:600px;
+right:0;
+
+transform-origin:left center;
+transform-style:preserve-3d;
+transition:1.2s ease;
+cursor:pointer;
+
+backface-visibility:hidden;
+z-index:1;
+}
+
+/* FRENTE E VERSO */
+.front,
+.back{
+position:absolute;
+width:100%;
+height:100%;
+backface-visibility:hidden;
+overflow:hidden;
+
+background: linear-gradient(90deg,#efe8d8,#fffaf0,#efe8d8);
+box-shadow:0 0 30px rgba(0,0,0,.2);
+}
+
+/* VERSO */
+.back{
+transform:rotateY(180deg);
+}
+
+/* CAPA */
+.cover .front{
+background: linear-gradient(145deg,#1c1c1c,#111);
+border:2px solid #c9a86a;
+
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+
+color:#c9a86a;
+}
+
+.cover h1{
+font-size:3rem;
+font-weight:300;
+text-align:center;
+letter-spacing:2px;
+}
+
+.cover p{
+margin-top:20px;
+letter-spacing:4px;
+text-transform:uppercase;
+font-size:.8rem;
+}
+
+/* CONTEÚDO */
+.content{
+padding:60px;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+.content h2{
+font-size:3rem;
+margin-bottom:20px;
+color:#111;
+}
+
+.content p{
+font-size:1.15rem;
+line-height:1.8;
+color:#444;
+}
+
+/* IMAGEM */
+.content img{
+width:100%;
+height:250px;
+object-fit:cover;
+border-radius:10px;
+margin-top:20px;
+}
+
+/* VIRADA */
+.page.flipped{
+transform: rotateY(-180deg);
+z-index:0;
+}
+
+/* SOMBRA CENTRAL */
+.book::before{
+content:"";
+position:absolute;
+left:50%;
+top:0;
+width:30px;
+height:100%;
+transform:translateX(-50%);
+background: linear-gradient(90deg,rgba(0,0,0,.3),transparent,rgba(0,0,0,.3));
+z-index:999;
+pointer-events:none;
+}
+
+/* BOTÃO */
+.reset-btn{
+position:absolute;
+bottom:20px;
+padding:12px 20px;
+background:#c9a86a;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-family:Georgia,serif;
+font-size:14px;
+transition:0.3s;
+}
+
+.reset-btn:hover{
+transform:scale(1.05);
+background:#e0bf7a;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="book">
+
+<!-- CAPA -->
+<div class="page cover">
+  <div class="front">
+    <h1>Programa<br>Musical</h1>
+    <p>Cerimônias e Eventos</p>
+  </div>
+
+  <div class="back">
+    <div class="content">
+      <h2>Capítulo I</h2>
+      <p>Piano Solo — elegância na simplicidade.</p>
+      <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d">
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 2 -->
+<div class="page">
+  <div class="front">
+    <div class="content">
+      <h2>Capítulo II</h2>
+      <p>Duos Musicais: Piano + Violino / Piano + Voz.</p>
+      <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0">
+    </div>
+  </div>
+
+  <div class="back">
+    <div class="content">
+      <h2>Capítulo III</h2>
+      <p>Trios Musicais: mais profundidade e emoção.</p>
+      <img src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6">
+    </div>
+  </div>
+</div>
+
+<!-- PÁGINA 3 -->
+<div class="page">
+  <div class="front">
+    <div class="content">
+      <h2>Capítulo IV</h2>
+      <p>Formação completa: piano, violino, violoncelo e voz.</p>
+      <img src="https://images.unsplash.com/photo-1519682337058-a94d519337bc">
+    </div>
+  </div>
+
+  <div class="back">
+    <div class="content">
+      <h2>Fim</h2>
+      <p>Cada história merece uma trilha sonora inesquecível.</p>
+      <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea">
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- BOTÃO RESET -->
+<button class="reset-btn" onclick="resetBook()">Voltar ao Início</button>
+
+<script>
+
+const pages = document.querySelectorAll('.page');
+
+let current = 0;
+
+/* =========================
+   STACK INICIAL
+========================= */
+function updateStack() {
+  pages.forEach((page, i) => {
+    page.style.zIndex = pages.length - i;
+  });
+}
+
+updateStack();
+
+/* =========================
+   RENDER
+========================= */
+function render() {
+  pages.forEach((page, i) => {
+    page.classList.toggle('flipped', i < current);
+  });
+}
+
+/* =========================
+   AVANÇAR
+========================= */
+function nextPage() {
+  if (current >= pages.length) return;
+  current++;
+  render();
+}
+
+/* =========================
+   VOLTAR
+========================= */
+function prevPage() {
+  if (current <= 0) return;
+  current--;
+  render();
+}
+
+/* =========================
+   RESET
+========================= */
+function resetBook() {
+  current = 0;
+  render();
+}
+
+/* =========================
+   CLIQUE
+========================= */
+pages.forEach((page, index) => {
+  page.addEventListener('click', () => {
+    if (index === current) nextPage();
+    else if (index === current - 1) prevPage();
+  });
+});
+
+/* =========================
+   TECLADO
+========================= */
+document.addEventListener('keydown', (e) => {
+  if (e.key === "ArrowRight") nextPage();
+  if (e.key === "ArrowLeft") prevPage();
+});
+
+render();
+
+</script>
+
+</body>
+</html>
